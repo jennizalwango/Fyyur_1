@@ -12,7 +12,7 @@ from logging import Formatter, FileHandler
 from flask_wtf import Form
 from forms import *
 from models import db_setup, Venue, Artist, Show
-from flask_migrate import Migrate
+# from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from flask_moment import Moment
 
@@ -358,8 +358,24 @@ def show_artist(artist_id):
     "upcoming_shows_count": 3,
   }
 
-  data = list(filter(lambda d: d['id'] == artist_id, [data1, data2, data3]))[0]
-  return render_template('pages/show_artist.html', artist=data)
+  # data = list(filter(lambda d: d['id'] == artist_id, [data1, data2, data3]))[0]
+  artist = db.session.query(Artist).filter_by(id=artist_id).first()
+  data ={}
+
+  if artist:
+    data= artist.__dict__
+
+    pastshows= db.session.query(Show).filter_by(artist_id=artist.id).filter(
+      Show.start_time< datetime.utcnow().isoformat()
+    ).all()
+    upcomingshows = db.session.query(Show).filter_by(artist_id = artist.id).filter(
+    Show.start_time > datetime.utcnow().isoformat()).all())
+
+    data['past_shows'] = pastshows
+    data['upcomingshows'] = upcomingshows
+    data['past_shows_count'] = past_shows_count
+    data['upcoming_shows_count'] = len(upcomingshows)
+    return render_template('pages/show_artist.html', artist=data)
 
 #  Update
 #  ----------------------------------------------------------------
