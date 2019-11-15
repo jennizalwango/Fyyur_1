@@ -12,7 +12,6 @@ from logging import Formatter, FileHandler
 from flask_wtf import Form
 from forms import *
 from models import db_setup, Venue, Artist, Show
-# from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from flask_moment import Moment
 
@@ -585,11 +584,10 @@ def create_show_submission():
         db.session.commit()
     except:
         db.session.rollback()
-        flash('Show was not listed!')
+        flash('An error occurred. Show could not be listed.')
     finally:
         db.session.close()
-        # on successful db insert, flash success
-        flash('Show was successfully listed!')
+        flash('show was successfully listed')
     # TODO: on unsuccessful db insert, flash an error instead.
     # e.g., flash('An error occurred. Show could not be listed.')
     # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
